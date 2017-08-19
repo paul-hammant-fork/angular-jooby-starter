@@ -26,12 +26,16 @@
  */
 package de.protubero.ajs;
 
+import org.jsimpledb.annotation.JField;
+import org.jsimpledb.annotation.JSimpleClass;
+
 /**
  * Simple person class for demo purposes.
  * 
  * @author MSchaefer
  *
  */
+@JSimpleClass
 public class Person {
 
 	private int id;
@@ -39,42 +43,52 @@ public class Person {
 	private String email;
 	private int age;
 
+	@JField(indexed = true)
 	public int getId() {
 		return id;
 	}
-
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	@JField
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	@JField
 	public String getEmail() {
 		return email;
 	}
-
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
+	@JField
 	public int getAge() {
 		return age;
 	}
-
 	public void setAge(int age) {
 		this.age = age;
 	}
 
 	public void updateWith(Person upToDatePerson) {
-		this.age = upToDatePerson.age;
-		this.email = upToDatePerson.email;
-		this.name = upToDatePerson.name;
+		this.setAge(upToDatePerson.getAge());
+		this.setEmail(upToDatePerson.getEmail());
+		this.setName(upToDatePerson.getName());
+	}
+
+	@Override
+	public String toString() {
+		return "Person{" +
+				"id=" + getId() +
+				", name='" + getName() + '\'' +
+				", email='" + getEmail() + '\'' +
+				", age=" + getAge() +
+				'}';
 	}
 
 }

@@ -26,6 +26,18 @@
  */
 package de.protubero.ajs;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.google.inject.Provider;
+import javaslang.Function1;
+import org.jooby.Env;
 import org.jooby.Jooby;
 import org.jooby.banner.Banner;
 import org.jooby.json.Jackson;
@@ -42,6 +54,9 @@ import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.typesafe.config.Config;
 
 import javaslang.control.Try;
+
+import java.io.IOException;
+import java.util.function.Function;
 
 /**
  * 
@@ -62,8 +77,9 @@ public class App extends Jooby {
 		// Include Jackson, providing the JSON parser and renderer
 		use(new Jackson());
 
-		// make the person stare available as singleton via dependency injection
-		bind(new PersonStore());
+		// Use one or the other.
+		bind(PersonStore.class, PersonStoreImpl.class);
+        //bind(PersonStore.class, JSimpleDBPersonStoreImpl.class);
 
 		// Init person store at startup with data loaded from the configuration
 		onStart(registry -> {
@@ -81,6 +97,10 @@ public class App extends Jooby {
 				logger.info("Saving {}", person);
 			});
 
+		});
+
+		onStop(() -> {
+			require(PersonStore.class).stop();
 		});
 		
 		// provide swagger API, but only for the API that is used by the client

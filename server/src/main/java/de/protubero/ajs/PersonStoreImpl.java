@@ -27,15 +27,54 @@
 package de.protubero.ajs;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public interface PersonStore {
-    Person insert(Person person);
+import javaslang.collection.List;
 
-    Optional<Person> selectById(int id);
+import javax.inject.Singleton;
 
-    java.util.List<Person> selectAll();
+/**
+ * Simple collection to hold the person objects. If it looks unfamiliar,
+ * thats because i played around with the javaslang lib (now named vavr).
+ *
+ * @author MSchaefer
+ *
+ */
+@Singleton
+public class PersonStoreImpl implements PersonStore {
 
-    boolean delete(int id);
+    private AtomicInteger idCounter = new AtomicInteger();
 
-    void stop();
+    // Immutable List of person objects
+    private List<Person> data = List.empty();
+
+    public Person insert(Person person) {
+        person.setId(idCounter.incrementAndGet());
+        data = data.append(person);
+        return person;
+    }
+
+    public Optional<Person> selectById(int id) {
+        return data.find(p -> p.getId() == id).toJavaOptional();
+    }
+
+    public java.util.List<Person> selectAll() {
+        return data.toJavaList();
+    }
+
+    public boolean delete(int id) {
+        Optional<Person> personToDelete = selectById(id);
+        if (personToDelete.isPresent()) {
+            data = data.remove(personToDelete.get());
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public void stop() {
+        // no op
+    }
 }

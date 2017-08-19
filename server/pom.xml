@@ -10,6 +10,20 @@
 	<artifactId>ajs-server</artifactId>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.jsimpledb</groupId>
+			<artifactId>jsimpledb-main</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsimpledb</groupId>
+			<!--<artifactId>jsimpledb-kv-bdb</artifactId>-->
+			<artifactId>jsimpledb-kv-sqlite</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+
 		<!-- Server -->
 		<dependency>
 			<groupId>org.jooby</groupId>

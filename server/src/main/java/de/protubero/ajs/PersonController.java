@@ -89,12 +89,12 @@ public class PersonController {
       }
     }
 
-	@POST
-	@Consumes("application/json")
-	public Result submit(@Body Person newPerson) throws Throwable {
-		Person insertedPerson = store.insert(newPerson);
-		return Results.with(Status.CREATED).header("Location", "/api/persons/" + insertedPerson.getId());
-	}
+//	@POST
+//	@Consumes("application/json")
+//	public Result submit(@Body Person newPerson) throws Throwable {
+//		Person insertedPerson = store.insert(newPerson);
+//		return Results.with(Status.CREATED).header("Location", "/api/persons/" + insertedPerson.getId());
+//	}
 
 	@DELETE
 	@Path("/:id")

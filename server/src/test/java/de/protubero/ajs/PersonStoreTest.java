@@ -6,11 +6,13 @@ import static de.protubero.ajs.Helpers.namedPerson;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
-public class PersonStoreTest {
+public abstract class PersonStoreTest {
+
+    protected abstract PersonStore makePersonStore();
 
     @Test
     public void shouldBeAbleToStoreKnownPerson() {
-        PersonStore ps = new PersonStore();
+        PersonStore ps = makePersonStore();
         Person p = ps.insert(namedPerson("Fred"));
         assertThat(p.getId(), equalTo(1));
 
@@ -24,11 +26,14 @@ public class PersonStoreTest {
         assertThat(ps.selectAll().get(0).getName(), equalTo("Fred"));
     }
 
+
     @Test
     public void shouldBeAbleToDeleteKnownPerson() {
-        PersonStore ps = new PersonStore();
+        PersonStore ps = makePersonStore();
         Person p = ps.insert(namedPerson("Fred"));
         assertThat(p.getId(), equalTo(1));
+        assertThat(p.getName(), equalTo("Fred"));
+        assertTrue(ps.selectById(1).isPresent());
         ps.delete(1);
         assertFalse(ps.selectById(1).isPresent());
     }

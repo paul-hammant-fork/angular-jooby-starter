@@ -1,6 +1,8 @@
 package de.protubero.ajs;
 
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.CustomMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
@@ -9,10 +11,11 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static io.restassured.RestAssured.get;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.fail;
 
-public class AppInterationTest {
+public class AppIntegrationTest {
 
     private static final AppOverriddenForTests APP_OVERRIDDEN_FOR_TESTS = new AppOverriddenForTests();
 
@@ -39,7 +42,8 @@ public class AppInterationTest {
     }
 
     private Matcher<String> isJsonArrayOrPeopleWithNames(final String... uniqueStrings) {
-        return new CustomMatcher<String>("Matches names in people JSON array") {
+        return new BaseMatcher<String>() {
+
             @Override
             public boolean matches(Object o) {
                 String content = (String) o;
@@ -62,11 +66,18 @@ public class AppInterationTest {
                         }
                     }
                     if (!hasIt) {
-                        fail("People array should have contained person with name " + uniqueString);
+                        return false;
                     }
                 }
                 return true;
             }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("People array should have contained people with names: " + String.join(", ", asList(uniqueStrings)));
+
+            }
+
         };
     }
 }
