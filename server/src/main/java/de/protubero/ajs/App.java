@@ -79,8 +79,8 @@ public class App extends Jooby {
 		use(new Jackson());
 
 		// Use one or the other.
-		bind(PersonStore.class, PersonStoreImpl.class);
-        //bind(PersonStore.class, JSimpleDBPersonStoreImpl.class);
+		//bind(PersonStore.class, PersonStoreImpl.class);
+        bind(PersonStore.class, JSimpleDBPersonStoreImpl.class);
 
 		// Init person store at startup with data loaded from the configuration
 		onStart(registry -> {

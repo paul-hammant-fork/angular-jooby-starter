@@ -75,7 +75,6 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 	@Override
 	public Person insert(Person person) {
 		final JTransaction txn = createTransaction();
-		JTransaction.setCurrent(txn);
 		try {
 			Person p = txn.create(Person.class);
 			p.setAge(person.getAge());
@@ -83,17 +82,15 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 			p.setName(person.getName());
 			int id = idCounter.incrementAndGet();
 			p.setId(id);
-			txn.commit();
 			return p;
 		} finally {
-			JTransaction.setCurrent(null);
+			txn.commit();
 		}
 	}
 
 	@Override
 	public Optional<Person> selectById(int id) {
 		final JTransaction txn = createTransaction();
-		JTransaction.setCurrent(null);
 		try {
 			NavigableMap<Integer, NavigableSet<Person>> map = txn.queryIndex(Person.class,
 					"id", Integer.class).asMap();
@@ -109,7 +106,6 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 			return Optional.of(rv);
 		} finally {
 			txn.commit();
-			JTransaction.setCurrent(null);
 		}
 	}
 
@@ -123,7 +119,6 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 	@Override
 	public java.util.List<Person> selectAll() {
 		final JTransaction txn = createTransaction();
-		JTransaction.setCurrent(txn);
 		try {
 			NavigableSet<Person> all = txn.getAll(Person.class);
 			// this because of 'org.jsimpledb.core.StaleTransactionException: transaction cannot be accessed because it is no longer usable'
@@ -135,14 +130,12 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 			return rv;
 		} finally {
 			txn.commit();
-			JTransaction.setCurrent(null);
 		}
 	}
 
 	@Override
 	public boolean delete(int id) {
 		final JTransaction txn = createTransaction();
-		JTransaction.setCurrent(txn);
 		try {
 			try {
 				Person p = txn.queryIndex(Person.class,
@@ -154,7 +147,6 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 			}
 		} finally {
 			txn.commit();
-			JTransaction.setCurrent(null);
 		}
 	}
 
