@@ -95,30 +95,13 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 		try {
 			NavigableMap<Integer, NavigableSet<Person>> map = txn.queryIndex(Person.class,
 					"id", Integer.class).asMap();
-
-			// needs vanilla version of queryIndex
-
-			if (!map.containsKey(id)) {
-				return Optional.empty();
+			if (map.containsKey(id)) {
+				return Optional.of(txn.toVanilla(map.get(id).first()));
 			}
-			Person first = map.get(id).first();
-
-			// this because of 'org.jsimpledb.core.StaleTransactionException: transaction cannot be accessed because it is no longer usable'
-			// wishing for a toVanilla() or toValueOject()/toVanillaImmutable() so that users don't call setters
-			Person rv = toVanilla(first);
-
-			return Optional.of(rv);
+			return Optional.empty();
 		} finally {
 			txn.commit();
 		}
-	}
-
-	// to be deleted when vanilla version of queryIndex available
-	private Person toVanilla(Person first) {
-		Person rv = new Person();
-		rv.setId(first.getId());
-		rv.updateWith(first);
-		return rv;
 	}
 
 	@Override
