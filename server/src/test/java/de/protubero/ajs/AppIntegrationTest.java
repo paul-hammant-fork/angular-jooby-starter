@@ -54,7 +54,7 @@ public class AppIntegrationTest {
                     // Well it's roughly a Json array of people in
                     people = new com.fasterxml.jackson.databind.ObjectMapper().readValue(content, Person[].class);
                 } catch (IOException e) {
-                    throw new AssertionError("Not a JSON array of people, was: " + content);
+                    return false;
                 }
 
                 for (String uniqueString : uniqueStrings) {

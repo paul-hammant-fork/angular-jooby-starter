@@ -26,6 +26,7 @@
  */
 package de.protubero.ajs;
 
+import com.google.common.collect.ImmutableList;
 import org.jsimpledb.*;
 import org.jsimpledb.core.Database;
 import org.jsimpledb.kv.sqlite.SQLiteKVDatabase;
@@ -94,6 +95,9 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 		try {
 			NavigableMap<Integer, NavigableSet<Person>> map = txn.queryIndex(Person.class,
 					"id", Integer.class).asMap();
+
+			// needs vanilla version of queryIndex
+
 			if (!map.containsKey(id)) {
 				return Optional.empty();
 			}
@@ -109,6 +113,7 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 		}
 	}
 
+	// to be deleted when vanilla version of queryIndex available
 	private Person toVanilla(Person first) {
 		Person rv = new Person();
 		rv.setId(first.getId());
@@ -120,14 +125,7 @@ public class JSimpleDBPersonStoreImpl implements PersonStore {
 	public java.util.List<Person> selectAll() {
 		final JTransaction txn = createTransaction();
 		try {
-			NavigableSet<Person> all = txn.getAll(Person.class);
-			// this because of 'org.jsimpledb.core.StaleTransactionException: transaction cannot be accessed because it is no longer usable'
-			// also wishing for a toVanilla() or toValueOject()/toVanillaImmutable() so that users don't call setters
-			List<Person> rv = new ArrayList<>();
-			for (Person p : all) {
-				rv.add(toVanilla(p));
-			}
-			return rv;
+			return txn.getAllVanilla(Person.class);
 		} finally {
 			txn.commit();
 		}
